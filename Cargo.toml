@@ -1,5 +1,9 @@
 [package]
 name = "vector-type"
 version = "0.1.0"
+authors = ["ScottyThePilot <scotty.codes@gmail.com>"]
+description = "A macro to generate generic vector types"
+repository = "https://github.com/ScottyThePilot/vector-type"
+license = "MIT OR Apache-2.0"
 edition = "2024"
 rust-version = "1.85"
