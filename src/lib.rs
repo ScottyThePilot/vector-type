@@ -1,5 +1,19 @@
 #![no_std]
 #![no_implicit_prelude]
+#![warn(
+  absolute_paths_not_starting_with_crate,
+  redundant_imports,
+  redundant_lifetimes,
+  future_incompatible,
+  deprecated_in_future,
+  missing_docs,
+  unnameable_types,
+  unreachable_pub
+)]
+
+//! This library provides a [`vector_type!`] macro which can define a 'Vector Struct' and a 'Vector Enum'.
+//!
+//! See [`vector_type!`] for more info.
 
 #[doc(hidden)]
 pub mod private;
@@ -13,7 +27,7 @@ pub mod private;
 ///
 /// The bulk of the utility you will get from this macro are the functions, constants,
 /// and traits automatically implemented for the vector struct and vector enum.
-/// See the 'Implementation' section for a list of items that are implemented by this macro.
+/// See the [Implementation][vector_type#implementation] section for a list of items that are implemented by this macro.
 ///
 /// The vector struct will always be `repr(C)`, and this cannot be changed.
 /// The vector enum must specify a `repr` type via the macro, which should be an integer type.
@@ -27,41 +41,100 @@ pub mod private;
 /// # use vector_type::vector_type;
 /// vector_type!{
 ///   // The vector struct's name
-///   pub struct MyVectorStruct;
+///   pub struct Languages;
 ///
 ///   // Attributes are allowed, though many traits are already derived
 ///   #[derive(Default)]
 ///   // The vector enum's name, and its repr type
-///   pub enum MyVectorEnum as u8;
+///   pub enum Language as u8;
 ///
 ///   // Each field, and its respective enum variant
 ///   abstract {
-///     field1: #[default] Field1,
-///     field2: Field2,
-///     field3: Field3
+///     /// English
+///     en: #[default] En,
+///     /// Spanish
+///     es: Es,
+///     /// Portuguese
+///     pt: Pt,
+///     /// French
+///     fr: Fr,
+///     /// German
+///     de: De,
+///     /// Russian
+///     ru: Ru,
+///     /// Chinese
+///     zh: Zh
 ///   }
 /// }
 /// ```
 ///
 /// Will expand to something (roughly) like this:
 /// ```ignore
+/// // Vector structs are always repr(c)
 /// #[repr(C)]
+/// // Vector structs always derive these traits
 /// #[derive(Debug, Clone, Copy, PartialEq, Eq, Hash)]
-/// pub struct MyVectorStruct<T> {
-///   field1: T,
-///   field2: T,
-///   field3: T
+/// pub struct Languages<T> {
+///   /// English
+///   en: T,
+///   /// Spanish
+///   es: T,
+///   /// Portuguese
+///   pt: T,
+///   /// French
+///   fr: T,
+///   /// German
+///   de: T,
+///   /// Russian
+///   ru: T,
+///   /// Chinese
+///   zh: T
 /// }
 ///
 /// #[derive(Default)]
+/// // Vector enums always have a user-specified repr type
 /// #[repr(u8)]
+/// // Vector enums always derive these traits
 /// #[derive(Debug, Clone, Copy, PartialEq, Eq, PartialOrd, Ord, Hash)]
-/// pub enum MyVectorEnum {
-///   #[default]
-///   Field1,
-///   Field2,
-///   Field3
+/// pub enum Language {
+///   #[default] En, Es, Pt, Fr, De, Ru, Zh
 /// }
+///
+/// // (implementations omitted)
+/// ```
+///
+/// You can then use it like so:
+/// ```rust
+/// # extern crate vector_type;
+/// # use vector_type::vector_type;
+/// # vector_type!{
+/// #   pub struct Languages;
+/// #
+/// #   #[derive(Default)]
+/// #   pub enum Language as u8;
+/// #
+/// #   abstract {
+/// #     en: #[default] En,
+/// #     es: Es,
+/// #     pt: Pt,
+/// #     fr: Fr,
+/// #     de: De,
+/// #     ru: Ru,
+/// #     zh: Zh
+/// #   }
+/// # }
+/// let lang_string: Languages<&'static str> = Languages {
+///   en: "Enable",
+///   es: "Habilitar",
+///   pt: "Habilitar",
+///   fr: "Activer",
+///   de: "Aktivieren",
+///   ru: "Включить",
+///   zh: "启用"
+/// };
+///
+/// assert_eq!(lang_string[Language::En], "Enable");
+/// assert_eq!(lang_string[Language::Fr], "Activer");
 /// ```
 ///
 /// # Implementation
@@ -529,6 +602,7 @@ macro_rules! vector_type {
   );
 }
 
+/// Expands to a implementation of `$OpTrait` and `$OpAssignTrait` (a binary operator) for the given `$VectorStruct` and `$VectorEnum`.
 #[doc(hidden)]
 #[macro_export]
 macro_rules! vector_type_binary_op {
@@ -551,6 +625,7 @@ macro_rules! vector_type_binary_op {
   );
 }
 
+/// Expands to a implementation of `$OpTrait` (a unary operator) for the given `$VectorStruct` and `$VectorEnum`.
 #[doc(hidden)]
 #[macro_export]
 macro_rules! vector_type_unary_op {
@@ -564,26 +639,4 @@ macro_rules! vector_type_unary_op {
       }
     }
   );
-}
-
-#[cfg(test)]
-mod tests {
-  pub extern crate core;
-
-  crate::vector_type!{
-    pub struct Vector;
-
-    #[derive(Default)]
-    pub enum VectorField as u8;
-
-    abstract {
-      field1: #[default] Field1,
-      field2: Field2,
-      field3: Field3
-    }
-  }
-
-  const _: () = {
-    core::assert!(VectorField::VARIANTS_COUNT == 3);
-  };
 }
