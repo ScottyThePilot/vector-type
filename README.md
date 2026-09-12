@@ -53,12 +53,19 @@ Will expand to something (roughly) like this:
 #[repr(C)]
 #[derive(Debug, Clone, Copy, PartialEq, Eq, Hash)]
 pub struct Languages<T> {
+  /// English
   en: T,
+  /// Spanish
   es: T,
+  /// Portuguese
   pt: T,
+  /// French
   fr: T,
+  /// German
   de: T,
+  /// Russian
   ru: T,
+  /// Chinese
   zh: T
 }
 
@@ -66,21 +73,7 @@ pub struct Languages<T> {
 #[repr(u8)]
 #[derive(Debug, Clone, Copy, PartialEq, Eq, PartialOrd, Ord, Hash)]
 pub enum Language {
-  #[default]
-  /// English
-  En,
-  /// Spanish
-  Es,
-  /// Portuguese
-  Pt,
-  /// French
-  Fr,
-  /// German
-  De,
-  /// Russian
-  Ru,
-  /// Chinese
-  Zh
+  #[default] En, Es, Pt, Fr, De, Ru, Zh
 }
 
 // (implementations omitted)
