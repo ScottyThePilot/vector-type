@@ -144,6 +144,7 @@ pub mod private;
 ///   const fn splat(value: T) -> Self where T: Copy;
 ///   const fn get(&self, variant: $VectorEnum) -> &T;
 ///   const fn get_mut(&mut self, variant: $VectorEnum) -> &mut T;
+///   const fn set(&mut self, variant: $VectorEnum, value: T) -> T;
 ///   const fn zip<U>(self, other: $VectorStruct<U>) -> $VectorStruct<(T, U)>;
 ///   fn zip_with<U, V>(self, other: $VectorStruct<U>, mut f: impl FnMut(T, U) -> V) -> $VectorStruct<V>;
 ///   fn map<U>(self, mut f: impl FnMut(T) -> U) -> $VectorStruct<U>;
@@ -304,6 +305,10 @@ macro_rules! vector_type {
 
       $vis_struct const fn get_mut(&mut self, variant: $VectorEnum) -> &mut T {
         match variant { $($VectorEnum::$Variant => &mut self.$field),* }
+      }
+
+      $vis_struct const fn set(&mut self, variant: $VectorEnum, value: T) -> T {
+        core::mem::replace(self.get_mut(variant), value)
       }
 
       $vis_struct const fn zip<U>(self, other: $VectorStruct<U>) -> $VectorStruct<(T, U)> {
@@ -473,7 +478,7 @@ macro_rules! vector_type {
 
       $vis_struct const fn just(which: $VectorEnum) -> Self {
         let mut this = Self::ALL_FALSE;
-        *this.get_mut(which) = true;
+        this.set(which, true);
         this
       }
 

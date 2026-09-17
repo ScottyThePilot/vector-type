@@ -102,6 +102,7 @@ impl<T> $VectorStruct<T> {
   const fn splat(value: T) -> Self where T: Copy;
   const fn get(&self, variant: $VectorEnum) -> &T;
   const fn get_mut(&mut self, variant: $VectorEnum) -> &mut T;
+  const fn set(&mut self, variant: $VectorEnum, value: T) -> T;
   const fn zip<U>(self, other: $VectorStruct<U>) -> $VectorStruct<(T, U)>;
   fn zip_with<U, V>(self, other: $VectorStruct<U>, mut f: impl FnMut(T, U) -> V) -> $VectorStruct<V>;
   fn map<U>(self, mut f: impl FnMut(T) -> U) -> $VectorStruct<U>;
