@@ -15,7 +15,7 @@ The vector struct will always be `repr(C)`, and this cannot be changed.
 The vector enum must specify a `repr` type via the macro, which should be an integer type.
 Enum discriminants may be specified after the field names.
 
-# Examples
+## Examples
 
 The following code:
 ```rust
@@ -95,7 +95,7 @@ assert_eq!(lang_string[Language::En], "Enable");
 assert_eq!(lang_string[Language::Fr], "Activer");
 ```
 
-# Implementation
+## Implementation
 The following items are implemented for the vector struct and the vector enum:
 ```rust
 impl<T> $VectorStruct<T> {
@@ -156,7 +156,9 @@ impl<T> Eq for $VectorStruct<T> where T: Eq;
 impl<T> Hash for $VectorStruct<T> where T: Hash;
 
 impl<T> AsRef<[T; $VectorEnum::VARIANTS_COUNT]> for $VectorStruct<T>;
+impl<T> AsRef<[T]> for $VectorStruct<T>;
 impl<T> AsMut<[T; $VectorEnum::VARIANTS_COUNT]> for $VectorStruct<T>;
+impl<T> AsMut<[T]> for $VectorStruct<T>;
 impl<T> From<[T; $VectorEnum::VARIANTS_COUNT]> for $VectorStruct<T>;
 impl<T> From<$VectorStruct<T>> for [T; $VectorEnum::VARIANTS_COUNT];
 impl<T> Index<$VectorEnum> for $VectorStruct<T>;
@@ -206,3 +208,13 @@ impl PartialOrd for $VectorEnum;
 impl Ord for $VectorEnum;
 impl Hash for $VectorEnum;
 ```
+
+### Caveats
+
+By default, vector structs aren't given an implementation for `PartialOrd` or `Ord`.
+This is done for the same reasons described [here](https://github.com/bitshifter/glam-rs/issues/138).
+If you need `PartialOrd` or `Ord` for your vector struct, you can easily add a derive for them.
+
+As a consequence, vector structs also do not implement `Borrow` or `BorrowMut`,
+as they require `Eq`, `Ord` and `Hash` to be equivalent over the borrowed and owned types.
+If you need `Borrow` or `BorrowMut` for your vector struct, you can implement them manually.

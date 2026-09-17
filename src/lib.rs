@@ -198,7 +198,9 @@ pub mod private;
 /// impl<T> Hash for $VectorStruct<T> where T: Hash;
 ///
 /// impl<T> AsRef<[T; $VectorEnum::VARIANTS_COUNT]> for $VectorStruct<T>;
+/// impl<T> AsRef<[T]> for $VectorStruct<T>;
 /// impl<T> AsMut<[T; $VectorEnum::VARIANTS_COUNT]> for $VectorStruct<T>;
+/// impl<T> AsMut<[T]> for $VectorStruct<T>;
 /// impl<T> From<[T; $VectorEnum::VARIANTS_COUNT]> for $VectorStruct<T>;
 /// impl<T> From<$VectorStruct<T>> for [T; $VectorEnum::VARIANTS_COUNT];
 /// impl<T> Index<$VectorEnum> for $VectorStruct<T>;
@@ -248,6 +250,16 @@ pub mod private;
 /// impl Ord for $VectorEnum;
 /// impl Hash for $VectorEnum;
 /// ```
+///
+/// ## Caveats
+///
+/// By default, vector structs aren't given an implementation for `PartialOrd` or `Ord`.
+/// This is done for the same reasons described [here](https://github.com/bitshifter/glam-rs/issues/138).
+/// If you need `PartialOrd` or `Ord` for your vector struct, you can easily add a derive for them.
+///
+/// As a consequence, vector structs also do not implement `Borrow` or `BorrowMut`,
+/// as they require `Eq`, `Ord` and `Hash` to be equivalent over the borrowed and owned types.
+/// If you need `Borrow` or `BorrowMut` for your vector struct, you can implement them manually.
 #[macro_export]
 macro_rules! vector_type {
   (
