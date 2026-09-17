@@ -1,6 +1,9 @@
-# `vector-type`
+# Vector Type
 
-This library provides a `vector_type!` macro which can define a 'Vector Struct' and a 'Vector Enum'.
+[![Crate][crates-img]][crates-url]
+[![Documentation][docs-img]][docs-url]
+
+This library provides a [`vector_type!`] macro which can define a 'Vector Struct' and a 'Vector Enum'.
 
 The vector struct is essentially a generic array type,
 where all fields are the same type. Each field corresponds to a
@@ -219,3 +222,11 @@ If you need `PartialOrd` or `Ord` for your vector struct, you can easily add a d
 As a consequence, vector structs also do not implement `Borrow` or `BorrowMut`,
 as they require `Eq`, `Ord` and `Hash` to be equivalent over the borrowed and owned types.
 If you need `Borrow` or `BorrowMut` for your vector struct, you can implement them manually.
+
+[`vector_type!`]: https://docs.rs/vector-type/latest/vector_type/macro.vector_type.html
+
+[crates-img]: https://img.shields.io/crates/v/vector-type.svg
+[crates-url]: https://crates.io/crates/vector-type
+
+[docs-img]: https://docs.rs/vector-type/badge.svg
+[docs-url]: https://docs.rs/vector-type
